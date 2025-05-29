@@ -27,7 +27,7 @@ public class UIEnterMapSize : UIElement
     {
         if (int.TryParse(input, out int number))
         {
-            if (number > 10 && number <= 30)
+            if (number > 10 && number <= 100)
             {
                 startButton.interactable = true;
             }

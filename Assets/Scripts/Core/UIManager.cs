@@ -50,6 +50,12 @@ public class UIManager : Singleton<UIManager>
             case UIStates.Info:
                 gameUI.Get<UIInfo>().Show();
                 break;
+            case UIStates.NoWay:
+                gameUI.Get<UINoWay>().Show();
+                break;
+            case UIStates.NpcAnim:
+               
+                break;
             default:
                 break;
         }
@@ -78,6 +84,12 @@ public class UIManager : Singleton<UIManager>
             case UIStates.Info:
                 gameUI.Get<UIInfo>().Hide();
                 break;
+            case UIStates.NoWay:
+
+                break;
+            case UIStates.NpcAnim:
+
+                break;
             default:
                 break;
         }
@@ -103,5 +115,5 @@ public class UIManager : Singleton<UIManager>
 
 public enum UIStates
 {
-    Play, Home, PickGamemode, EnterMapSize, Setting, Info, None
+    Play, Home, PickGamemode, EnterMapSize, Setting, Info, NoWay, NpcAnim, None
 }

@@ -20,11 +20,17 @@ public class GridManager : Singleton<GridManager>
 
     Vector2Int startPoint = new Vector2Int(-1, -1);
     Vector2Int endPoint = new Vector2Int(-1, -1);
+
+    [SerializeField] NPCManager npcManager;
+
+    bool hadSolve = false;
     public void InitializeMatrix()
     {
         Debug.Log("Reset");
         gridDict.Clear();
         gridSandBoxDict.Clear();
+        npcManager.StopAnim();
+        hadSolve = false;
     }
     public void AddGrid(Grid grid)
     {
@@ -212,17 +218,6 @@ public class GridManager : Singleton<GridManager>
 
     public void FindPath()
     {
-        if(Gamemode == Gamemode.SandBox)
-        {
-            FindPathSandBoxMode();
-        }
-        else if(Gamemode != Gamemode.None)
-        {
-            FindPathRandomMode();
-        }
-    }
-    void FindPathRandomMode()
-    {
         //sử dụng BFS
         int size = MapSize;
 
@@ -246,6 +241,7 @@ public class GridManager : Singleton<GridManager>
             if (current == endPoint)
             {
                 List<Vector2Int> path = new List<Vector2Int>();
+                List<RectTransform> transforms = new List<RectTransform>();
                 Vector2Int p = endPoint;
 
                 while (p != startPoint)
@@ -257,96 +253,70 @@ public class GridManager : Singleton<GridManager>
                 path.Add(startPoint);
                 path.Reverse();
 
-                for (int i = 1; i < path.Count - 1; i++)
+                for (int i = 0; i < path.Count; i++)
                 {
-                    gridDict[path[i]].ChangeGridType(GridType.CorrectRoad);
+                    if (Gamemode != Gamemode.SandBox && Gamemode != Gamemode.None)
+                    {
+                        transforms.Add(gridDict[path[i]].GetRectTransform());
+                        if (i == path.Count - 1) continue;
+                        gridDict[path[i]].ChangeGridType(GridType.CorrectRoad);
+                    }
+                    else if (Gamemode == Gamemode.SandBox)
+                    {
+                        transforms.Add(gridSandBoxDict[path[i]].GetRectTransform());
+                        if (i == path.Count - 1) continue;
+                        gridSandBoxDict[path[i]].ChangeGridType(GridType.CorrectRoad);  
+                    }
                 }
+                npcManager.SpawnNPC(transforms[0], GameUI.Instance.Get<UIGame>().GetNPCParent());
+                npcManager.PlayNPCAnim(transforms);
+
+                UIManager.Instance.ChangeState(UIStates.NpcAnim);
+                hadSolve = true;
+                return;
             }
 
             foreach (var dir in directions)
             {
                 Vector2Int next = current + dir;
 
-                if (!gridDict.ContainsKey(next) || visited.Contains(next)) continue;
-                var type = gridDict[next].GridType;
-                if (type == GridType.Road || type == GridType.EndPoint)
+                if (Gamemode != Gamemode.SandBox && Gamemode != Gamemode.None)
                 {
-                    queue.Enqueue(next);
-                    visited.Add(next);
-                    parent[next] = current;
+                    if (!gridDict.ContainsKey(next) || visited.Contains(next)) continue;
+                    var type = gridDict[next].GridType;
+                    if (type == GridType.Road || type == GridType.EndPoint)
+                    {
+                        queue.Enqueue(next);
+                        visited.Add(next);
+                        parent[next] = current;
+                    }
+                }    
+                else if (Gamemode == Gamemode.SandBox)
+                {
+                    Debug.Log("Sand Box");
+                    if (!gridSandBoxDict.ContainsKey(next) || visited.Contains(next)) continue;
+                    var type = gridSandBoxDict[next].GridType;
+                    if (type == GridType.Road || type == GridType.EndPoint)
+                    {
+                        queue.Enqueue(next);
+                        visited.Add(next);
+                        parent[next] = current;
+                    }
+
+                    foreach(GridSandBox gridSandBox in gridSandBoxDict.Values) gridSandBox.SetCanClick(false);
                 }
 
+               //Debug.Log("loop");
             }
         }
 
-        GameUI.Instance.Get<UINoWay>().Show();
-    }
-
-    void FindPathSandBoxMode()
-    {
-        //sử dụng BFS
-        int size = MapSize;
-
-        Queue<Vector2Int> queue = new Queue<Vector2Int>();
-        Dictionary<Vector2Int, Vector2Int> parent = new Dictionary<Vector2Int, Vector2Int>();
-        HashSet<Vector2Int> visited = new HashSet<Vector2Int>();
-
-        queue.Enqueue(startPoint);
-        visited.Add(startPoint);
-
-        Vector2Int[] directions = new Vector2Int[]
-        {
-            Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right
-        };
-
-
-        while (queue.Count > 0)
-        {
-            Vector2Int current = queue.Dequeue();
-
-            if (current == endPoint)
-            {
-                List<Vector2Int> path = new List<Vector2Int>();
-                Vector2Int p = endPoint;
-
-                while (p != startPoint)
-                {
-                    path.Add(p);
-                    p = parent[p];
-                }
-
-                path.Add(startPoint);
-                path.Reverse();
-
-                for (int i = 1; i < path.Count - 1; i++)
-                {
-                    gridSandBoxDict[path[i]].ChangeGridType(GridType.CorrectRoad);
-                }
-            }
-
-            foreach (var dir in directions)
-            {
-                Vector2Int next = current + dir;
-
-                if (!gridSandBoxDict.ContainsKey(next) || visited.Contains(next)) continue;
-                var type = gridSandBoxDict[next].GridType;
-                if (type == GridType.Road || type == GridType.EndPoint)
-                {
-                    queue.Enqueue(next);
-                    visited.Add(next);
-                    parent[next] = current;
-                }
-
-                foreach (GridSandBox gridSandBox in gridSandBoxDict.Values) gridSandBox.SetCanClick(false);
-                //Debug.Log("loop");
-            }
-        }
-
-        GameUI.Instance.Get<UINoWay>().Show();
+        if (hadSolve) return;
+        UIManager.Instance.ChangeState(UIStates.NoWay);
     }
 
     public void GenerateSandBox()
     {
+        Debug.Log(1);
         GetGridSandBox(Vector2Int.zero).ChangeGridType(GridType.Wall);
         GetGridSandBox(Vector2Int.zero).ChangeGridType(GridType.StartPoint);
         startPoint = Vector2Int.zero;

@@ -55,6 +55,8 @@ public class Grid : MonoBehaviour
                 break;
         }
     }
+
+    public RectTransform GetRectTransform() { return GetComponent<RectTransform>(); }    
 }
 
 public enum GridType

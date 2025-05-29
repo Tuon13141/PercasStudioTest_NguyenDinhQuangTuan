@@ -18,6 +18,8 @@ public class UIGame : UIElement
     [SerializeField] Button reloadButton;
     [SerializeField] Button findPathButton;
 
+    [SerializeField] Transform npcParent;
+
     private void Start()
     {
         homeButton.onClick.AddListener(HomeButton);
@@ -46,4 +48,7 @@ public class UIGame : UIElement
         SoundManager.Instance.PlayClickSound();
         GridManager.Instance.FindPath();
     }
+
+    public Transform GetNPCParent() { return npcParent; }
+
 }

@@ -638,6 +638,7 @@ MonoBehaviour:
   homeButton: {fileID: 7663390073911271404}
   reloadButton: {fileID: 133639415368099007}
   findPathButton: {fileID: 1669794529814953152}
+  npcParent: {fileID: 3913780591668175342}
 --- !u!114 &7473156142456891844
 MonoBehaviour:
   m_ObjectHideFlags: 0

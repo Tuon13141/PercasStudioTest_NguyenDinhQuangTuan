@@ -8,7 +8,7 @@ public class NPCManager : MonoBehaviour
 
     GameObject currentNpc = null;
 
-    [SerializeField] Transform parent;
+    Transform parent;
 
     public void SpawnNPC(RectTransform rectTransform, Transform parent)
     {
@@ -18,22 +18,28 @@ public class NPCManager : MonoBehaviour
             currentNpc = Instantiate(npcPref, parent);
         }
 
+        currentNpc.SetActive(true);
+
         RectTransform rect = currentNpc.GetComponent<RectTransform>();
 
         rect.localScale = rectTransform.localScale;
 
         rect.sizeDelta = rectTransform.sizeDelta;
 
-        rect.anchoredPosition = rectTransform.anchoredPosition;
-        rect.anchorMin = rectTransform.anchorMin;
-        rect.anchorMax = rectTransform.anchorMax;
-        rect.pivot = rectTransform.pivot;
+        currentNpc.transform.localPosition = rectTransform.localPosition;
     }
 
     
     public void PlayNPCAnim(List<RectTransform> list)
     {
-        StartCoroutine(CommonUIAnimation.MoveThroughTargets(currentNpc.GetComponent<RectTransform>(), list, 0.5f));
+        StartCoroutine(CommonUIAnimation.MoveThroughTargets(currentNpc.GetComponent<RectTransform>(), list, 0.1f));
 
+    }
+
+    public void StopAnim()
+    {
+        if (currentNpc != null)
+            currentNpc.SetActive(false);
+        StopAllCoroutines();
     }
 }
