@@ -8,6 +8,8 @@ public class UIManager : Singleton<UIManager>
     [SerializeField] private UIStates _state = UIStates.None;
     
     GameUI gameUI = null;
+
+    bool firstGame = true;
    
 
     private void Start()
@@ -39,6 +41,10 @@ public class UIManager : Singleton<UIManager>
                 break;
             case UIStates.PickGamemode:
                 gameUI.Get<UIPickMode>().Show();
+                if (firstGame)
+                {
+                    gameUI.Get<UIRule>().Show();
+                }
                 break;
             case UIStates.EnterMapSize:
                 gameUI.Get<UIGame>().Show();
