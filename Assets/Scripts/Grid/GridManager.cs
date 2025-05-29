@@ -26,6 +26,7 @@ public class GridManager : Singleton<GridManager>
     bool hadSolve = false;
     public void InitializeMatrix()
     {
+        ReturnAllToPool();
         Debug.Log("Reset");
         gridDict.Clear();
         gridSandBoxDict.Clear();

@@ -52,7 +52,7 @@ public class GridMapGenerator : MonoBehaviour, IOnStart
     {
         foreach (Transform child in gridLayoutGroup.transform)
         {
-            Destroy(child.gameObject);
+            child.gameObject.SetActive(false);
         }
 
         float containerWidth = containerRect.rect.width;
