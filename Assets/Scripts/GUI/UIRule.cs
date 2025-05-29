@@ -16,6 +16,7 @@ public class UIRule : UIElement
     void Start()
     {
         closeButton.onClick.AddListener(CloseButton);
+        StartCoroutine(DelayEnableCloseButton());
     }
 
     public void CloseButton()
@@ -31,5 +32,12 @@ public class UIRule : UIElement
     public override void Hide()
     {
         StartCoroutine(CommonUIAnimation.ClosePopUp(holder.GetComponent<RectTransform>(), Vector2.one, Vector2.zero, 0.15f, base.Hide));
+    }
+
+    IEnumerator DelayEnableCloseButton()
+    {
+        yield return new WaitForSeconds(3f);
+
+        closeButton.gameObject.SetActive(true);
     }
 }

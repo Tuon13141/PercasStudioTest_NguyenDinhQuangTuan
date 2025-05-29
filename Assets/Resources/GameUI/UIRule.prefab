@@ -157,7 +157,8 @@ MonoBehaviour:
     any rule! (can use for testing false cases)\n\n- Random With Guaranteed Path
     Mode : Random, but still ensures a path from the start to the destination. \n\n-
     Random Maze Mode : Create a maze!\n\n- Sand Box Mode : Create your own custom
-    map. (By tapping the road to change its type)\n\n"
+    map. (By tapping the road to change its type)\n\n- You can test the map size
+    up to 100x100 !!\n\n\n"
 --- !u!1 &4830882385583314096
 GameObject:
   m_ObjectHideFlags: 0
@@ -255,7 +256,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4870544281526855162
 RectTransform:
   m_ObjectHideFlags: 0
