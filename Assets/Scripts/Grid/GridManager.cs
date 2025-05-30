@@ -46,6 +46,24 @@ public class GridManager : Singleton<GridManager>
         return gridDict.TryGetValue(pos, out var grid) ? grid : null;
     }
 
+    public void SortGridDictByPosition()
+    {
+        gridDict = gridDict
+            .OrderBy(kv => kv.Key.y)
+            .ThenBy(kv => kv.Key.x)
+            .ToDictionary(kv => kv.Key, kv => kv.Value);
+    }
+
+    public void SortGridSandBoxDictByPosition()
+    {
+        gridSandBoxDict = gridSandBoxDict
+            .OrderBy(kv => kv.Key.y)
+            .ThenBy(kv => kv.Key.x)
+            .ToDictionary(kv => kv.Key, kv => kv.Value);
+    }
+
+
+
     public GridSandBox GetGridSandBox(Vector2Int pos)
     {
         return gridSandBoxDict.TryGetValue(pos, out var grid) ? grid : null;
@@ -317,7 +335,6 @@ public class GridManager : Singleton<GridManager>
 
     public void GenerateSandBox()
     {
-        Debug.Log(1);
         GetGridSandBox(Vector2Int.zero).ChangeGridType(GridType.Wall);
         GetGridSandBox(Vector2Int.zero).ChangeGridType(GridType.StartPoint);
         startPoint = Vector2Int.zero;

@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 using static GridMapGenerator;
+using static Unity.VisualScripting.Metadata;
 
 public class GridMapGenerator : MonoBehaviour, IOnStart
 {
@@ -27,6 +29,11 @@ public class GridMapGenerator : MonoBehaviour, IOnStart
         Gamemode gamemode = gridManager.Gamemode;
         gridSize = gridManager.MapSize;
 
+        foreach (Transform child in gridLayoutGroup.transform)
+        {
+            child.gameObject.SetActive(false);
+        }
+
         gridManager.InitializeMatrix();
       
 
@@ -50,11 +57,7 @@ public class GridMapGenerator : MonoBehaviour, IOnStart
     }
     public void SetUpLayourGroup()
     {
-        foreach (Transform child in gridLayoutGroup.transform)
-        {
-            child.gameObject.SetActive(false);
-        }
-
+       
         float containerWidth = containerRect.rect.width;
         float containerHeight = containerRect.rect.height;
 
@@ -93,6 +96,7 @@ public class GridMapGenerator : MonoBehaviour, IOnStart
         }
 
         gridManager.PureRandom(start, end);
+        Resort();
     }
 
     public void GenerateRandomWithGuaranteedPathMap()
@@ -123,6 +127,7 @@ public class GridMapGenerator : MonoBehaviour, IOnStart
         }
 
         gridManager.GenerateGuaranteedPath(start, end);
+        Resort();
     }
 
     public void GenerateRandomMazeMap()
@@ -146,6 +151,8 @@ public class GridMapGenerator : MonoBehaviour, IOnStart
         }
 
         gridManager.GenerateMaze(start, end);
+
+        Resort();
     }
 
     void GenerateSandBoxMap()
@@ -166,6 +173,31 @@ public class GridMapGenerator : MonoBehaviour, IOnStart
         }
 
         gridManager.GenerateSandBox();
+        Resort();
+    }
+
+    void Resort()
+    {
+        Transform parent = gridLayoutGroup.transform;
+        List<Transform> tiles = new List<Transform>();
+
+        foreach (Transform child in parent)
+        {
+            tiles.Add(child);
+        }
+
+        tiles = tiles.OrderBy(t =>
+        {
+            string[] parts = t.name.Split('_');
+            int x = int.Parse(parts[1]);
+            int y = int.Parse(parts[2]);
+            return y * 10000 + x; 
+        }).ToList();
+
+        for (int i = 0; i < tiles.Count; i++)
+        {
+            tiles[i].SetSiblingIndex(i);
+        }
     }
 }
 
